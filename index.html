@@ -1,12 +1,326 @@
-<!doctype html>
 <html>
+
 <head>
-  <title>Klodrian's Diablo 2 Classic Resource</title>
+    <title>
+        D2 Classic Gear
+    </title>
 </head>
 
+<style>
+    .card{
+        max-width: 350px;
+        padding: 16px;
+        border: 1px solid #ddd;}
+    .stats{
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+    .stats span{
+        text-align: right;
+    }
+    .layout{
+        display: grid;
+        max-width: 700px;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "gear select"
+            "pristats secstats";
+    }
+    .gear-display{
+        grid-area: gear;
+        position: relative;
+    }
+    .gear-img{
+        position: absolute;
+        pointer-events: none;
+    }
+    .gear-select{
+        grid-area: select;
+    }
+    .char-pristats{
+        grid-area: pristats;
+    }
+    .char-secstats{
+        grid-area: secstats;
+    }
+</style>
+
 <body>
-    <h3>Diablo 2</h3>
-    Nej nej.
+
+<div class="layout">
+    <div class="gear-display card">
+
+		<img id="gearcanvas" class="gear-img" data-x="5", data-y="5" src="images/gearcanvas.png">
+
+        <img id="show_helm" class="gear-img" data-x="138" data-y="9">
+        <img id="show_body" class="gear-img" data-x="138" data-y="80">
+        <img id="show_gloves" class="gear-img" data-x="23" data-y="183">
+
+    </div>
+    <div class="gear-select card">
+
+        <div class="card" style="max-width: 200px;">
+            <table id="gear">
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="char-pristats card">
+
+        <div>
+            <select id="char">
+                <option value="none"> -- SELECT CLASS -- </option>
+            </select>
+        </div>
+
+        <input type="text" id="level">
+
+        <div class="card stats">
+            <div>Strength: </div><span id="str"></span>
+            <div>Dexterity: </div><span id="dex"></span>
+            <div>Vitality: </div><span id="vit"></span>
+            <div>Energy: </div><span id="ene"></span>
+        </div>
+        <div class="card stats">
+            <div>Life: </div><span id="life"></span>
+            <div>Mana: </div><span id="mana"></span>
+        </div>
+    </div>
+
+    <div class="char-secstats card">
+        <div class="card stats">
+            <div>Fire Resist: </div><span id="fr"></span>
+            <div>Cold Resist: </div><span id="cr"></span>
+            <div>Lightning Resist: </div><span id="lr"></span>
+            <div>Poison Resist: </div><span id="pr"></span>
+        </div>
+        <div class="card stats">
+            <div>FHR: </div><span id="fhr"></span>
+            <div>FCR: </div><span id="fcr"></span>
+            <div>FRW: </div><span id="frw"></span>
+            <div>IAS: </div><span id="ias"></span>
+        </div>
+    </div>
+</div>
+
+<div id="printer">
+</div>
+
 </body>
-  
+
+<script type="module">
+
+    import { ITEMS } from "./data/items.js";
+    import { CLASSES } from "./data/classes.js";
+
+    document.querySelectorAll(".gear-img").forEach(img => {
+        img.style.left = img.dataset.x + "px";
+        img.style.top  = img.dataset.y + "px";
+    });
+
+    const HERO = {
+        cur_class: "none",
+        lvl: 1,
+        gear: {
+            helm: "none",
+            body: "none",
+            gloves: "none",
+            belt: "none",
+            boots: "none",
+            ring1: "none",
+            ring2: "none",
+            amulet: "none",
+            mainhand: "none",
+            offhand: "none",
+        }
+    };
+
+    const STATS = {
+        str: 0,
+        dex: 0,
+        vit: 0,
+        ene: 0,
+        life: 0,
+        mana: 0,
+        life_base: 0,
+        mana_base: 0,
+        life_lvl: 0,
+        mana_lvl: 0,
+        life_vit: 0,
+        mana_ene: 0,
+        fr: 0,
+        cr: 0,
+        lr: 0,
+        pr: 0,
+        fhr: 0,
+        fcr: 0,
+        frw: 0,
+        ias: 0
+    };
+    //document.body.style.background = '#353243';
+    document.body.style.background = "darkgray";
+    
+    const a = document.getElementById('printer');
+    //a.textContent = STATS.str;
+
+    const charselect = document.getElementById('char');
+    const lvlfield = document.getElementById('level');
+
+    const stat_ids = ["str","dex","vit","ene","life","mana","fr","cr","lr","pr"];
+    const gearslots = ["helm", "body", "gloves", "belt", "boots", "ring1", "ring2", "amulet", "mainhand", "offhand"];
+    const tbody = document.querySelector("#gear tbody");
+    const ITEMS_BY_SLOT = {};
+    const geartypes = ["helm", "body", "gloves", "belt", "boots", "ring", "amulet", "mainhand", "offhand"];
+    //const gearnames = ["Helm", "Body", "Gloves", "Belt", "Boots", "Ring", "Ring", "Main hand", "Off hand"];
+
+    geartypes.forEach(x => {
+        const found = ITEMS.filter(y => y.slot === x);
+        if (found.length === 0) return;
+
+        //const a = document.getElementById('printer');
+
+        //found.forEach(y => {
+        //    a.innerHTML += `${x} + ${y.name}<br>`;
+        //});
+        //a.innerHTML += `${x} + ${found.name}<br>`;
+    });
+
+    geartypes.forEach(x => {
+        const found = ITEMS.filter(y => y.slot === x);
+        if (found.length === 0) return;
+        ITEMS_BY_SLOT[x] = found;
+    });
+
+    tbody.innerHTML = '';
+    gearslots.forEach(x => {
+        
+        // Make gearlist for the slot
+        const sel = document.createElement('select');
+        sel.id = x;
+        sel.style.width = '130px';
+        const opt = document.createElement('option');
+        opt.value = "none"
+        opt.textContent = "";
+        sel.appendChild(opt);
+
+        let sfor = x;
+        if ((sfor === "ring1" || sfor === "ring2")){
+            sfor = "ring";
+        }
+        
+        if(sfor in ITEMS_BY_SLOT){
+            ITEMS_BY_SLOT[sfor].forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y.id;
+                opt.textContent = y.name;
+                sel.appendChild(opt);
+            });
+        }
+
+        // Put gearlist in the dropdown
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${x}</td><td id="sel_${x}"></td>`;
+        tbody.appendChild(tr);
+        const td_sel = document.getElementById(`sel_${x}`);
+        td_sel.appendChild(sel);
+    });
+
+    //const fuck = document.getElementById('sel_belt');
+    //fuck.innerHTML = 'MAGNUS';
+    
+    // Populate class menu
+    CLASSES.forEach(x => {
+        const opt = document.createElement('option');
+        opt.value = x.id;
+        opt.textContent = x.name;
+        charselect.appendChild(opt);
+    });
+
+    function displayStats(){
+        stat_ids.forEach(x => {
+            const stat = document.getElementById(x);
+            stat.textContent = STATS[x];
+        });
+    }
+
+    function loadStats(){
+        const cls = CLASSES.find(x => x.id === HERO.cur_class);
+        stat_ids.slice(0, 4).forEach(x => {
+            STATS[x] = cls.stats[x];    
+        });
+        //STATS.life = cls.fea.life;
+        //STATS.mana = cls.fea.mana;
+        STATS.life_base = cls.fea.life; 
+        STATS.mana_base = cls.fea.mana;
+        STATS.life_lvl = cls.fea.life_lvl;
+        STATS.mana_lvl = cls.fea.mana_lvl;
+        STATS.life_vit = cls.st_effect.life_vit;
+        STATS.mana_ene = cls.st_effect.mana_ene;
+    }
+
+    function changeClass(classId){
+        //const a = document.getElementById('printer');
+        //a.textContent = "mega";
+        HERO.cur_class = classId;
+        loadStats();
+        updateStats();
+        displayStats();
+    }
+
+    function changeLevel(level){
+        HERO.lvl = level;
+        updateStats();
+        displayStats();
+        const a = document.getElementById('printer');
+        a.textContent = HERO.lvl;
+        //a.textContent = STATS.str;
+    }
+
+    function updateStats(){
+        STATS.life = STATS.life_base + Math.floor(STATS.life_lvl * (HERO.lvl - 1) + STATS.life_vit * STATS.vit);
+        STATS.mana = STATS.mana_base + Math.floor(STATS.mana_lvl * (HERO.lvl - 1) + STATS.mana_ene * STATS.ene);
+    }
+
+    function updateGearBonuses(){
+
+    }
+
+    function updateGear(slot, itemId){
+
+        if (itemId != 'none'){
+            HERO.gear[slot] = ITEMS.find(x => x.id === itemId);
+            a.textContent = `An item was updated. ${slot} is now ${HERO.gear[slot].name}.`;
+        } else {
+            HERO.gear[slot] = "none";
+            a.textContent = `An item was updated. ${slot} is now removed.`;
+        }
+
+    }
+
+    function displayGear(){
+        gearslots.forEach(x => {
+            if (HERO.gear[x] != "none"){
+                if (Object.hasOwn(HERO.gear[x], "img")){
+                    const disp = document.getElementById(`show_${x}`);
+                    disp.src = HERO.gear[x].img;
+                }
+            }
+        })
+    }
+
+    charselect.addEventListener('change', (e) => changeClass(e.target.value));
+    lvlfield.addEventListener('change', (e) => changeLevel(e.target.value));
+    document.getElementById("gear").addEventListener('change', (e) => {
+        if (e.target.tagName != "SELECT") return;
+
+        const slot = e.target.id;
+        const itemId = e.target.value;
+
+        updateGear(slot, itemId);
+        displayGear();
+    });
+
+</script>
+
 </html>
