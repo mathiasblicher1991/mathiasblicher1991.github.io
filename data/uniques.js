@@ -16,6 +16,23 @@ export const UNIQUES = [
         }
     },
     {
+        id: "steelclash",
+        name: "Steelclash",
+        slot: "offhand",
+        type: "unique",
+        img: "images/steelclash.png",
+        req: { str: 47, lvl: 17 },
+        stats: {
+            pala_skills: 1,
+			fbr: 20,
+            block: 25,
+            edef: [98],
+            allres: 15,
+            pdr: 3,
+            lrad: 3
+        }
+    },
+    {
         id: "bloodfist",
         name: "Bloodfist",
         slot: "gloves",

@@ -34,6 +34,7 @@ export const SETS = [
         name: "Sigon's Wrap",
         slot: "belt",
         type: "set",
+		img: "images/sigon_belt.png",
         req: { str: 60, lvl: 6 },
         stats: {
             fr: 20,
@@ -48,6 +49,7 @@ export const SETS = [
         name: "Sigon's Sabot",
         slot: "boots",
         type: "set",
+		img: "images/sigon_boots.png",
         req: { str: 70, lvl: 6 },
         stats: {
             frw: 20,
