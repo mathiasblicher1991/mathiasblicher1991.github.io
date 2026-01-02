@@ -86,5 +86,19 @@ export const SETS = [
         },
         bonus: {
         }
+    },
+    {
+        id: "hsarus_boots",
+        name: "Hsarus' Iron Heel",
+        slot: "boots",
+        type: "set",
+		img: "images/hsarus_boots.png",
+        req: { str: 30, lvl: 3 },
+        stats: {
+            frw: 20,
+			fr: 25
+        },
+        bonus: {
+        }
     }
 ];

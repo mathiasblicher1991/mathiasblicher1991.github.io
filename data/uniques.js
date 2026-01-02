@@ -1,5 +1,20 @@
 export const UNIQUES = [
     {
+        id: "hawkmail",
+        name: "Hawkmail",
+        slot: "body",
+        type: "unique",
+        img: "images/hawkmail.png",
+        req: { str: 44, lvl: 15 },
+        stats: {
+            edef: [80, 100],
+            frw: 10,
+			max_cr: 15,
+			cr: 15,
+			cbf: 1
+        }
+    },
+    {
         id: "twitchthroe",
         name: "Twitchthroe",
         slot: "body",
@@ -53,6 +68,7 @@ export const UNIQUES = [
         name: "Nagelring",
         slot: "ring",
         type: "unique",
+		img: "images/ring.png",
         req: { lvl: 7 },
         stats: {
             mdr: 3,
@@ -66,6 +82,7 @@ export const UNIQUES = [
         name: "Manald Heal",
         slot: "ring",
         type: "unique",
+		img: "images/ring.png",
         req: { lvl: 15 },
         stats: {
             manaleech: [4, 7],
@@ -79,6 +96,7 @@ export const UNIQUES = [
         name: "Stone of Jordan",
         slot: "ring",
         type: "unique",
+		img: "images/ring.png",
         req: { lvl: 29 },
         stats: {
             skills: 1,
